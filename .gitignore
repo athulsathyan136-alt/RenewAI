@@ -1,0 +1,34 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Jupyter
+.jupyter/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Raw and processed datasets
+data/raw/
+data/processed/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.temp
