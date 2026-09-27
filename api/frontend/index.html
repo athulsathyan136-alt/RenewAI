@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RenewAI | AI Renewable Energy Intelligence</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(34, 197, 94, 0.12),
+                    transparent 35%
+                ),
+                #050b16;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        header {
+            padding: 25px 0;
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .logo span {
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        .hero {
+            padding: 70px 0 45px;
+        }
+
+        .hero-label {
+            color: #4ade80;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: 55px;
+            line-height: 1.05;
+            max-width: 750px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: #4ade80;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            max-width: 700px;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.2fr)
+                minmax(0, 0.8fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background:
+                rgba(15, 23, 42, 0.88);
+            border:
+                1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .map-card {
+            padding: 15px;
+        }
+
+        #map {
+            width: 100%;
+            height: 520px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .section-label {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .forecast-value {
+            font-size: 55px;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        .forecast-unit {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .status {
+            padding: 18px;
+            border-radius: 14px;
+            background:
+                rgba(34,197,94,0.08);
+            border:
+                1px solid rgba(34,197,94,0.15);
+            margin-bottom: 25px;
+        }
+
+        .status-title {
+            color: #4ade80;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .status-text {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .metric {
+            padding: 18px;
+            background:
+                rgba(255,255,255,0.035);
+            border:
+                1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+        }
+
+        .metric-title {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 23px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .cta {
+            margin: 45px 0;
+            padding: 45px;
+            border-radius: 20px;
+            text-align: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(34,197,94,0.12),
+                    rgba(14,165,233,0.08)
+                );
+            border:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+        .cta h2 {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .cta p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        footer {
+            border-top:
+                1px solid rgba(255,255,255,0.08);
+            padding: 25px 0;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            #map {
+                height: 420px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="container header-content">
+
+            <div class="logo">
+                Renew<span>AI</span>
+            </div>
+
+            <div class="header-subtitle">
+                AI RENEWABLE ENERGY INTELLIGENCE
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="container">
+
+            <div class="hero-label">
+                ⚡ AI-POWERED RENEWABLE ENERGY
+            </div>
+
+            <h1>
+                Smarter
+                <span>Solar Energy</span>
+            </h1>
+
+            <p>
+                RenewAI uses machine learning to forecast
+                photovoltaic power generation and provide
+                real-time renewable energy intelligence.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+
+    <section>
+
+        <div class="container dashboard">
+
+
+            <!-- MAP -->
+
+            <div class="card map-card">
+
+                <div class="section-label">
+                    RENEWABLE ENERGY MAP
+                </div>
+
+                <div id="map"></div>
+
+            </div>
+
+
+            <!-- FORECAST -->
+
+            <div class="card forecast-card">
+
+                <div class="section-label">
+                    NEXT-HOUR SOLAR FORECAST
+                </div>
+
+
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-bottom: 5px;
+                    "
+                >
+
+                    <div
+                        id="forecastValue"
+                        class="forecast-value"
+                    >
+                        Loading...
+                    </div>
+
+
+                    <div
+                        id="forecastStatus"
+                        style="
+                            padding: 6px 10px;
+                            border-radius: 20px;
+                            background: rgba(34,197,94,0.12);
+                            border: 1px solid rgba(34,197,94,0.25);
+                            color: #4ade80;
+                            font-size: 11px;
+                            font-weight: bold;
+                            letter-spacing: 1px;
+                        "
+                    >
+                        ● LIVE
+                    </div>
+
+                </div>
+
+
+                <div class="forecast-unit">
+
+                    kW predicted PV generation
+
+                </div>
+
+
+                <div class="status">
+
+                    <div class="status-title">
+
+                        🤖 AI Forecasting Active
+
+                    </div>
+
+
+                    <div class="status-text">
+
+                        Powered by the RenewAI
+                        machine-learning model and
+                        real-time API prediction.
+
+                    </div>
+
+                </div>
+
+
+                <!-- METRICS -->
+
+                <div class="metrics">
+
+
+                    <!-- SOLAR SITES -->
+
+                    <div class="metric">
+
+                        <div class="metric-title">
+
+                            ☀️ Solar Sites
+
+                        </div>
+
+
+                        <div class="metric-value">
+
+                            5
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORECAST HORIZON -->
+
+                    <div class="metric">
+
+                        <div class="metric-title">
+
+                            ⚡ Forecast Horizon
+
+                        </div>
+
+
+                        <div
+                            class="metric-value"
+                            id="forecastHorizonValue"
+                        >
+                            1 Hour
+                        </div>
+
+                    </div>
+
+
+                    <!-- TEMPERATURE -->
+
+                    <div class="metric">
+
+                        <div class="metric-title">
+
+                            🌡️ Temperature
+
+                        </div>
+
+
+                        <div
+                            class="metric-value"
+                            id="temperatureValue"
+                        >
+                            32°C
+                        </div>
+
+                    </div>
+
+
+                    <!-- WIND -->
+
+                    <div class="metric">
+
+                        <div class="metric-title">
+
+                            💨 Wind Speed
+
+                        </div>
+
+
+                        <div
+                            class="metric-value"
+                            id="windValue"
+                        >
+                            4.2 m/s
+                        </div>
+
+                    </div>
+
+
+                    <!-- SOLAR IRRADIANCE -->
+
+                    <div class="metric">
+
+                        <div class="metric-title">
+
+                            ☀️ Solar Irradiance
+
+                        </div>
+
+
+                        <div
+                            class="metric-value"
+                            id="irradianceValue"
+                        >
+                            850 W/m²
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section>
+
+        <div class="container">
+
+            <div class="cta">
+
+                <h2>
+                    Renewable Energy + Artificial Intelligence
+                </h2>
+
+                <p>
+                    Forecasting solar generation with
+                    machine learning, cloud technologies,
+                    APIs and real-time renewable energy
+                    intelligence.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+<div style="
+    position: fixed;
+    top: 70px;
+    right: 35px;
+    font-size: 17px;
+    color: white;
+    z-index: 9999;
+    font-weight: 500;
+    background: rgba(8, 15, 30, 0.85);
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+">
+    ⚡ Built by <strong>Athul Sathyan</strong>
+</div>
+
+
+    <!-- LEAFLET JS -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <script>
+
+        /* ==========================================
+           MAP
+        ========================================== */
+
+        const map = L.map("map").setView(
+            [25.2048, 55.2708],
+            10
+        );
+
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(map);
+
+
+        /* ==========================================
+           SOLAR MARKER ICON
+        ========================================== */
+
+        function createSolarIcon(power) {
+
+            let color = "#22c55e";
+
+
+            if (power >= 0.40) {
+
+                color = "#22c55e";
+
+            }
+            else if (power >= 0.30) {
+
+                color = "#facc15";
+
+            }
+            else {
+
+                color = "#ef4444";
+
+            }
+
+
+            return L.divIcon({
+
+                className: "",
+
+                html: `
+
+                    <div style="
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 50%;
+                        background: ${color};
+                        border: 3px solid white;
+                        box-shadow: 0 0 15px ${color};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 19px;
+                    ">
+
+                        ☀️
+
+                    </div>
+
+                `,
+
+                iconSize: [38, 38],
+
+                iconAnchor: [19, 19]
+
+            });
+
+        }
+
+
+        /* ==========================================
+           SOLAR SITES
+        ========================================== */
+
+        const solarSites = [
+
+            {
+                name: "Downtown Dubai",
+                position: [25.1972, 55.2744],
+                power: 0.348,
+                status: "Active"
+            },
+
+            {
+                name: "Dubai Marina",
+                position: [25.0805, 55.1403],
+                power: 0.421,
+                status: "Active"
+            },
+
+            {
+                name: "Dubai Silicon Oasis",
+                position: [25.1220, 55.3773],
+                power: 0.392,
+                status: "Active"
+            },
+
+            {
+                name: "Jebel Ali",
+                position: [24.9857, 55.0273],
+                power: 0.287,
+                status: "Monitoring"
+            },
+
+            {
+                name: "Al Quoz",
+                position: [25.1413, 55.2380],
+                power: 0.365,
+                status: "Active"
+            }
+
+        ];
+
+
+        /* ==========================================
+           MARKER STORAGE
+        ========================================== */
+
+        const siteMarkers = {};
+
+
+        solarSites.forEach(site => {
+
+            const marker = L.marker(
+
+                site.position,
+
+                {
+                    icon: createSolarIcon(
+                        parseFloat(site.power)
+                    )
+                }
+
+            ).addTo(map);
+
+
+            siteMarkers[site.name] = marker;
+
+
+            marker.bindPopup(`
+
+                <div style="
+                    min-width: 190px;
+                ">
+
+                    <h3 style="
+                        margin-bottom: 8px;
+                    ">
+
+                        ☀️ ${site.name}
+
+                    </h3>
+
+
+                    <p>
+
+                        <strong>
+                            PV Generation:
+                        </strong>
+
+                        ${site.power.toFixed(3)}
+                        kW
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Status:
+                        </strong>
+
+                        ${site.status}
+
+                    </p>
+
+
+                    <p>
+
+                        🤖 AI forecasting enabled
+
+                    </p>
+
+                </div>
+
+            `);
+
+        });
+
+
+        /* ==========================================
+           MAP LEGEND
+        ========================================== */
+
+        const legend = L.control({
+
+            position: "bottomright"
+
+        });
+
+
+        legend.onAdd = function () {
+
+            const div = L.DomUtil.create(
+                "div",
+                "renewai-legend"
+            );
+
+
+            div.innerHTML = `
+
+                <div style="
+                    background: rgba(8, 15, 30, 0.92);
+                    color: white;
+                    padding: 14px 16px;
+                    border-radius: 12px;
+                    border: 1px solid rgba(255,255,255,0.15);
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+                    font-family: Arial, sans-serif;
+                    min-width: 175px;
+                ">
+
+
+                    <div style="
+                        font-size: 15px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    ">
+
+                        ☀️ Solar Generation
+
+                    </div>
+
+
+                    <div style="margin: 7px 0;">
+
+                        🟢 High
+
+                        <span style="float:right;">
+
+                            ≥ 0.40 kW
+
+                        </span>
+
+                    </div>
+
+
+                    <div style="margin: 7px 0;">
+
+                        🟡 Medium
+
+                        <span style="float:right;">
+
+                            0.30–0.39 kW
+
+                        </span>
+
+                    </div>
+
+
+                    <div style="margin: 7px 0;">
+
+                        🔴 Low
+
+                        <span style="float:right;">
+
+                            &lt; 0.30 kW
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            return div;
+
+        };
+
+
+        legend.addTo(map);
+
+
+        /* ==========================================
+           SOLAR FORECAST API
+        ========================================== */
+
+        async function getSolarForecast() {
+
+
+            const now = new Date();
+
+
+            const month =
+                now.getMonth() + 1;
+
+
+            const day =
+                now.getDate();
+
+
+            const hour =
+                now.getHours();
+
+
+            const startOfYear =
+                new Date(
+                    now.getFullYear(),
+                    0,
+                    0
+                );
+
+
+            const diff =
+                now - startOfYear;
+
+
+            const oneDay =
+                1000 * 60 * 60 * 24;
+
+
+            const dayOfYear =
+                Math.floor(
+                    diff / oneDay
+                );
+
+
+            /* ======================================
+               FORECAST INPUT DATA
+            ====================================== */
+
+            const forecastData = {
+
+
+                pv_power_lag_1h:
+                    2200,
+
+
+                pv_power_lag_2h:
+                    2100,
+
+
+                pv_power_lag_3h:
+                    1950,
+
+
+                irradiance_lag_1h:
+                    850 + (Math.random() * 100),
+
+
+                temperature_lag_1h:
+                    32 +
+                    (Math.random() * 2 - 1),
+
+
+                wind_lag_1h:
+                    4.2 +
+                    (Math.random() * 1 - 0.5),
+
+
+                month:
+                    month,
+
+
+                day:
+                    day,
+
+
+                hour:
+                    hour,
+
+
+                day_of_year:
+                    dayOfYear
+
+            };
+
+
+            console.log(
+                "RenewAI forecast input:",
+                forecastData
+            );
+
+
+            /* ======================================
+               UPDATE DASHBOARD METRICS
+            ====================================== */
+
+
+            document.getElementById(
+                "temperatureValue"
+            ).textContent =
+
+                forecastData
+                    .temperature_lag_1h
+                    .toFixed(1)
+
+                + "°C";
+
+
+            document.getElementById(
+                "windValue"
+            ).textContent =
+
+                forecastData
+                    .wind_lag_1h
+                    .toFixed(1)
+
+                + " m/s";
+
+
+            /* ======================================
+               SOLAR IRRADIANCE
+            ====================================== */
+
+            document.getElementById(
+                "irradianceValue"
+            ).textContent =
+
+                forecastData
+                    .irradiance_lag_1h.toFixed(0)
+
+                + " W/m²";
+
+
+            /* ======================================
+               FORECAST HORIZON
+            ====================================== */
+
+            document.getElementById(
+                "forecastHorizonValue"
+            ).textContent =
+                "1 Hour Ahead";
+
+
+            /* ======================================
+               CALL FASTAPI MODEL
+            ====================================== */
+
+            try {
+
+
+                const response = await fetch(
+
+                    "http://localhost:8000/predict",
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                forecastData
+                            )
+
+                    }
+
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Prediction request failed"
+                    );
+
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "RenewAI prediction:",
+                    result
+                );
+
+
+                /* ==================================
+                   UPDATE FORECAST VALUE
+                ================================== */
+
+                document.getElementById(
+                    "forecastValue"
+                ).textContent =
+
+                    result
+                        .predicted_pv_power_kw;
+
+
+                /* ==================================
+                   LIVE STATUS
+                ================================== */
+
+                document.getElementById(
+                    "forecastStatus"
+                ).textContent =
+                    "● LIVE";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.color =
+                    "#4ade80";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.background =
+                    "rgba(34,197,94,0.12)";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.borderColor =
+                    "rgba(34,197,94,0.25)";
+
+
+                /* ==================================
+                   UPDATE DOWNTOWN DUBAI
+                   MARKER WITH ML PREDICTION
+                ================================== */
+
+                const downtownSite =
+                    solarSites.find(
+
+                        site =>
+                            site.name ===
+                            "Downtown Dubai"
+
+                    );
+
+
+                if (
+
+                    downtownSite &&
+
+                    siteMarkers[
+                        "Downtown Dubai"
+                    ]
+
+                ) {
+
+
+                    downtownSite.power =
+
+                        Number(
+                            result
+                                .predicted_pv_power_kw
+                        );
+
+
+                    const downtownMarker =
+
+                        siteMarkers[
+                            "Downtown Dubai"
+                        ];
+
+
+                    downtownMarker.setIcon(
+
+                        createSolarIcon(
+                            downtownSite.power
+                        )
+
+                    );
+
+
+                    downtownMarker.setPopupContent(`
+
+                        <div style="
+                            min-width: 190px;
+                        ">
+
+                            <h3 style="
+                                margin-bottom: 8px;
+                            ">
+
+                                ☀️
+                                ${downtownSite.name}
+
+                            </h3>
+
+
+                            <p>
+
+                                <strong>
+                                    PV Generation:
+                                </strong>
+
+                                ${downtownSite.power.toFixed(3)}
+                                kW
+
+                            </p>
+
+
+                            <p>
+
+                                <strong>
+                                    Status:
+                                </strong>
+
+                                ${downtownSite.status}
+
+                            </p>
+
+
+                            <p>
+
+                                🤖 Live ML prediction
+
+                            </p>
+
+                        </div>
+
+                    `);
+
+                }
+
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    "RenewAI API error:",
+                    error
+                );
+
+
+                /* ==================================
+                   OFFLINE STATE
+                ================================== */
+
+                document.getElementById(
+                    "forecastValue"
+                ).textContent =
+                    "Offline";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).textContent =
+                    "● OFFLINE";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.color =
+                    "#f87171";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.background =
+                    "rgba(239,68,68,0.12)";
+
+
+                document.getElementById(
+                    "forecastStatus"
+                ).style.borderColor =
+                    "rgba(239,68,68,0.25)";
+
+            }
+
+        }
+
+
+        /* ==========================================
+           START FORECAST
+        ========================================== */
+
+        getSolarForecast();
+        setInterval(
+            getSolarForecast,
+    30000
+);
+
+    </script>
+
+
+</body>
+
+</html>
+

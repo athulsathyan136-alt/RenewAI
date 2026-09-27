@@ -1,5 +1,6 @@
 from pathlib import Path
-
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
 from fastapi import FastAPI
@@ -26,7 +27,13 @@ app = FastAPI(
     description="1-hour-ahead solar PV generation forecasting API for Dubai",
     version="1.0.0"
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --------------------------------------------------
 # Request schema
