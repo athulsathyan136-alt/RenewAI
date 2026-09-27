@@ -1,19 +1,29 @@
 from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import joblib
 import pandas as pd
-from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 
 # --------------------------------------------------
-# Load trained model
+# Paths
 # --------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
 MODEL_PATH = BASE_DIR / "models" / "renewai_forecast_model_deploy.joblib"
+
+FRONTEND_DIR = Path(__file__).resolve().parent / "frontend"
+
+INDEX_FILE = FRONTEND_DIR / "index.html"
+
+
+# --------------------------------------------------
+# Load trained model
+# --------------------------------------------------
 
 model = joblib.load(MODEL_PATH)
 
@@ -27,6 +37,12 @@ app = FastAPI(
     description="1-hour-ahead solar PV generation forecasting API for Dubai",
     version="1.0.0"
 )
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,6 +50,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # --------------------------------------------------
 # Request schema
@@ -98,16 +115,17 @@ class ForecastRequest(BaseModel):
 
 
 # --------------------------------------------------
-# Health endpoint
+# Frontend
 # --------------------------------------------------
 
-@app.get("/")
-def root():
-    return {
-        "message": "RenewAI Solar Forecast API",
-        "status": "running",
-        "forecast_horizon": "1 hour ahead"
-    }
+@app.get("/", include_in_schema=False)
+def serve_frontend():
+    return FileResponse(INDEX_FILE)
+
+
+# --------------------------------------------------
+# Health endpoint
+# --------------------------------------------------
 
 @app.get("/health")
 def health():
@@ -116,6 +134,7 @@ def health():
         "model": "renewai_forecast_model",
         "forecast_horizon": "1 hour ahead"
     }
+
 
 # --------------------------------------------------
 # Forecast endpoint
