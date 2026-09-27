@@ -33,5 +33,21 @@ dist/
 *.tmp
 *.temp
 
-# Large trained model
-models/*.joblib
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.temp
+# Deployment virtual environment
+.deploy-venv/
+
+# Large local trained model
+models/renewai_forecast_model.joblib
+
+# Deployment virtual environment
+.deploy-venv/

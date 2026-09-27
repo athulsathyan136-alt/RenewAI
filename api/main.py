@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-MODEL_PATH = BASE_DIR / "models" / "renewai_forecast_model.joblib"
+MODEL_PATH = BASE_DIR / "models" / "renewai_forecast_model_deploy.joblib"
 
 model = joblib.load(MODEL_PATH)
 
